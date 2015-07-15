@@ -51,28 +51,30 @@ public class BlurringView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        if (mBlurredView != null) {
-            if (prepare()) {
-                // If the background of the blurred view is a color drawable, we use it to clear
-                // the blurring canvas, which ensures that edges of the child views are blurred
-                // as well; otherwise we clear the blurring canvas with a transparent color.
-                if (mBlurredView.getBackground() != null && mBlurredView.getBackground() instanceof ColorDrawable){
-                    mBitmapToBlur.eraseColor(((ColorDrawable) mBlurredView.getBackground()).getColor());
-                }else {
-                    mBitmapToBlur.eraseColor(Color.TRANSPARENT);
-                }
-
-                mBlurredView.draw(mBlurringCanvas);
-                blur();
-
-                canvas.save();
-                canvas.translate(mBlurredView.getX() - getX(), mBlurredView.getY() - getY());
-                canvas.scale(mDownsampleFactor, mDownsampleFactor);
-                canvas.drawBitmap(mBlurredBitmap, 0, 0, null);
-                canvas.restore();
-            }
-            canvas.drawColor(mOverlayColor);
+        if (mBlurredView == null) {
+            return;
         }
+
+        if (prepare()) {
+            // If the background of the blurred view is a color drawable, we use it to clear
+            // the blurring canvas, which ensures that edges of the child views are blurred
+            // as well; otherwise we clear the blurring canvas with a transparent color.
+            if (mBlurredView.getBackground() != null && mBlurredView.getBackground() instanceof ColorDrawable) {
+                mBitmapToBlur.eraseColor(((ColorDrawable) mBlurredView.getBackground()).getColor());
+            } else {
+                mBitmapToBlur.eraseColor(Color.TRANSPARENT);
+            }
+
+            mBlurredView.draw(mBlurringCanvas);
+            blur();
+
+            canvas.save();
+            canvas.translate(mBlurredView.getX() - getX(), mBlurredView.getY() - getY());
+            canvas.scale(mDownsampleFactor, mDownsampleFactor);
+            canvas.drawBitmap(mBlurredBitmap, 0, 0, null);
+            canvas.restore();
+        }
+        canvas.drawColor(mOverlayColor);
     }
 
     public void setBlurRadius(int radius) {
