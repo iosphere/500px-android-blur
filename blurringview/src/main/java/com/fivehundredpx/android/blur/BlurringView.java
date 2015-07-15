@@ -34,10 +34,15 @@ public class BlurringView extends View {
         final int defaultDownsampleFactor = res.getInteger(R.integer.default_downsample_factor);
         final int defaultOverlayColor = res.getColor(R.color.default_overlay_color);
 
-        initializeRenderScript(context);
+        final boolean isInEditMode = isInEditMode();
+        if (!isInEditMode) {
+            initializeRenderScript(context);
+        }
 
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.PxBlurringView);
-        setBlurRadius(a.getInt(R.styleable.PxBlurringView_blurRadius, defaultBlurRadius));
+        if (!isInEditMode) {
+            setBlurRadius(a.getInt(R.styleable.PxBlurringView_blurRadius, defaultBlurRadius));
+        }
         setDownsampleFactor(a.getInt(R.styleable.PxBlurringView_downsampleFactor,
                 defaultDownsampleFactor));
         setOverlayColor(a.getColor(R.styleable.PxBlurringView_overlayColor, defaultOverlayColor));
@@ -51,7 +56,13 @@ public class BlurringView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+
+        // If no view has been attached, there's nothing to do
         if (mBlurredView == null) {
+            // Though if we're being previewed in Android Studio, draw the overlay colour
+            if (isInEditMode()) {
+                canvas.drawColor(mOverlayColor);
+            }
             return;
         }
 
